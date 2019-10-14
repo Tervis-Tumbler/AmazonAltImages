@@ -1,158 +1,57 @@
-$PathToCSV = "\\tervis.prv\creative\Graphics Drive\DESIGNS\Image Req\Amazon Image Requests\Amazon Alternate Images\Product Catalog_US 10.7.19active.csv"
-$CSVRecords = Import-Csv -Path $PathToCSV
+function Invoke-AmazonAltImageCopyAndRename {
+    [CmdletBinding()]
+    param (
+        $PathToCSV = "\\tervis.prv\creative\Graphics Drive\DESIGNS\Image Req\Amazon Image Requests\Amazon Alternate Images\Product Catalog_US 10.7.19active.csv",
+        $ResourcesPath = "\\tervis.prv\creative\Graphics Drive\DESIGNS\Image Req\Amazon Image Requests\Amazon Alternate Images",
+        $DestinationImageRootPath = "C:\Users\hourg\Desktop\AmazonAltImages"
+    )
+    $CSVRecords = Import-Csv -Path $PathToCSV
+    $CSVRecords |
+    Add-Member -MemberType ScriptProperty -Name PTO8ImageFileName -Value {
+        "$($This.'Item: Product Size')$($This.'Item: Product Sub Category')-$($This.'Item: Cup Count'.PadLeft(2,'0'))-$($This.'Item: Lid Type').jpg"
+    } -Force
+    
+    $CSVRecords |
+    ForEach-Object -Process {
+        $CSVRecord = $_
+        $ProductSize = $CSVRecord."Item: Product Size"
+        $ProductFormType = $CSVRecord."Item: Product Sub Category"
+        $AmazonAltImageByProductSizeAndProductFormTypeRootDirectory = "$ResourcesPath\$ProductSize$ProductFormType"
 
-$AlternateImagesToUseToFileNameMap = @{
-    "16 oz, Lid, Box, 2 Pack, Decoration" = @{
-        PT08 = "16oz-2-pak-lid.jpg"
-    }
-    "16 oz, Lid, No Box, Single, Decoration" = @{
-    }
-    "16 oz, Lid, No Box, Single, No Decoration" = @{
-    }
-    "16 oz, No Lid, Box, 2 Pack, Decoration" = @{
-        PT08 = "16oz-2-pak-nolid.jpg"
-    }
-    "16 oz, No Lid, Box, 2 Pack, No Decoration" = @{
-        PT08 = "16oz-2-pak-nolid.jpg"
-    }
-    "16 oz, No Lid, Box, 4 Pack, Decoration" = @{
-        PT08 = "16oz-4-pak-nolid.jpg"
-    }
-    "16 oz, No Lid, Box, 4 Pack, No Decoration" = @{
-        PT08 = "16oz-4-pak-nolid.jpg"
-    }
-    "16 oz, No Lid, No Box, Single, Decoration" = @{
+        $AmazonAltImageCodesWithOnlyOneImageFile = 5..12 | Where-Object {$_ -ne 8} | ForEach-Object { "PTO$($_)"}
+        $AmazonAltImageCodesWithOnlyOneImageFile |
+        ForEach-Object -Process {
+            $AmazonAltImageCode = $_
+            $AmazonAltImageSourceFile = Get-ChildItem -ErrorAction SilentlyContinue -Path "$AmazonAltImageByProductSizeAndProductFormTypeRootDirectory\$AmazonAltImageCode"
+            Copy-AmazonAltImageFile -DestinationImageRootPath $DestinationImageRootPath -AmazonAltImageCode $AmazonAltImageCode -CSVRecord $CSVRecord -AmazonAltImageSourceFile $AmazonAltImageSourceFile
 
-    }
-    "16 oz, No Lid, No Box, Single, No Decoration" = @{
+        }
 
+        $AmazonAltImageCodesWithMultipleImageFile = @("PTO8")
+        $AmazonAltImageCodesWithMultipleImageFile |
+        ForEach-Object -Process {
+            $AmazonAltImageCode = $_
+
+            $AmazonAltImageSourceFile = Get-Item -ErrorAction SilentlyContinue -Path "$AmazonAltImageByProductSizeAndProductFormTypeRootDirectory\$AmazonAltImageCode\$($CSVRecord.`"$($AmazonAltImageCode)ImageFileName`")"
+            Copy-AmazonAltImageFile -DestinationImageRootPath $DestinationImageRootPath -AmazonAltImageCode $AmazonAltImageCode -CSVRecord $CSVRecord -AmazonAltImageSourceFile $AmazonAltImageSourceFile
+        }
     }
 }
 
-$SizeAndSubCategory = @(
-    @{
-        "Item: Product Size" = 16
-        "Item: Product Sub Category" = "DWT"
-        FileName = [ordered]@{
-            PT07 = [ordered]@{
-                "Item: Lid Type" = "TRAVEL LID"
-                FileName ="16oz-alt-lid.jpg"
-            }
-            PT08 = [ordered]@{
-                "Item: Lid Type" = "TRAVEL LID"
-                "Package Type" = "04"
-                FileName ="16oz-4-pak-lid.jpg"
-            },
-            [ordered]@{
-                "Item: Lid Type" = "NA"
-                "Package Type" = "04"
-                FileName ="16oz-4-pak-nolid.jpg"
-            },
-            [ordered]@{
-                "Item: Lid Type" = "TRAVEL LID"
-                "Package Type" = "02"
-                FileName ="16oz-2-pak-lid.jpg"
-            },
-            [ordered]@{
-                "Item: Lid Type" = "NA"
-                "Package Type" = "02"
-                FileName ="16oz-2-pak-nolid.jpg"
-            },
-            [ordered]@{
-                "Item: Lid Type" = "TRAVEL LID"
-                "Package Type" = "BX"
-                FileName ="16oz-1-pak-lid.jpg"
-            },
-            [ordered]@{
-                "Item: Lid Type" = "NA"
-                "Package Type" = "BX"
-                FileName ="16oz-1-pak-nolid.jpg"
-            }
-        }
-    },
-    @{
-        "Item: Product Size" = 16
-        "Item: Product Sub Category" = "DWT"
-        FileName = [ordered]@{
-            PT07 = [ordered]@{
-                "Item: Lid Type" = "TRAVEL LID"
-                FileName ="16oz-alt-lid.jpg"
-            }
-            PT08 = [ordered]@{
-                "Item: Lid Type" = "TRAVEL LID"
-                "Package Type" = "04"
-                FileName ="16oz-4-pak-lid.jpg"
-            },
-            [ordered]@{
-                "Item: Lid Type" = "NA"
-                "Package Type" = "04"
-                FileName ="16oz-4-pak-nolid.jpg"
-            },
-            [ordered]@{
-                "Item: Lid Type" = "TRAVEL LID"
-                "Package Type" = "02"
-                FileName ="16oz-2-pak-lid.jpg"
-            },
-            [ordered]@{
-                "Item: Lid Type" = "NA"
-                "Package Type" = "02"
-                FileName ="16oz-2-pak-nolid.jpg"
-            },
-            [ordered]@{
-                "Item: Lid Type" = "TRAVEL LID"
-                "Package Type" = "BX"
-                FileName ="16oz-1-pak-lid.jpg"
-            },
-            [ordered]@{
-                "Item: Lid Type" = "NA"
-                "Package Type" = "BX"
-                FileName ="16oz-1-pak-nolid.jpg"
-            }
+function Copy-AmazonAltImageFile {
+    param(
+        $DestinationImageRootPath,
+        $AmazonAltImageCode,
+        $CSVRecord,
+        $AmazonAltImageSourceFile
+    )
+    if ($AmazonAltImageSourceFile) {
+        $DestinationDirectoryPath = "$DestinationImageRootPath/$AmazonAltImageCode"
+        $Destination = "$DestinationDirectoryPath/$($CSVRecord.UPC).$AmazonAltImageCode.jpg"
+
+        if (-not (Test-Path -LiteralPath $Destination)) {
+            New-Item -Force -Path $DestinationDirectoryPath -ItemType Directory -WhatIf:$WhatIf | Out-Null
+            $AmazonAltImageSourceFile | Copy-Item -Destination $Destination -WhatIf:$WhatIf
         }
     }
-)
-
-
-$ResourcesPath = "/Users/rpaul/Desktop/01_DEVELOP/14113-081619-Amazon-16ozAltImages/resources"
-$DestinationImageRootPath = "/Users/rpaul/Desktop/01_DEVELOP/14113-081619-Amazon-16ozAltImages"
-
-# Where-Object "Alternate Images to Use" -eq "16 oz, Lid, Box, 2 Pack, Decoration" |
-# Select-Object -First 1 |
-
-$CSVRecords |
-ForEach-Object -Process {
-    $CSVRecord = $_
-
-    $FileNames = $SizeAndSubCategory | 
-    Where-Object -Property "Item: Product Size" -EQ $CSVRecord."Item: Product Size" |
-    Where-Object -Property "Item: Product Sub Category" -EQ $CSVRecord."Item: Product Sub Category" |
-    Select-Object -ExpandProperty FileName
-
-    $AmazonAltImageCodes = $FileNames.Keys + @("PT08")
-    $AmazonAltImageCodes |
-    ForEach-Object -Process {
-        $AmazonAltImageCode = $_
-
-        if ($AmazonAltImageCode -eq "PT08" -and -not $AlternateImagesToUseToFileNameMap[$CSVRecord.'Alternate Images to Use'].PT08) {
-            
-        } else {
-            $FileName = if ($AmazonAltImageCode -ne "PT08") {
-                $FileNames[$AmazonAltImageCode]
-            } else {
-                $AlternateImagesToUseToFileNameMap[$CSVRecord.'Alternate Images to Use'].PT08
-            }
-            $SourcePath = "$ResourcesPath/$AmazonAltImageCode/$FileName"
-            $DestinationDirectoryPath = "$DestinationImageRootPath/$($CSVRecord.'Alternate Images to Use')/$AmazonAltImageCode"
-            $Destination = "$DestinationDirectoryPath/$($CSVRecord.'Item: UPC Number').$AmazonAltImageCode.jpg" 
-            $WhatIf = $false
-    
-            if (-not (Test-Path -LiteralPath $Destination)) {
-                New-Item -Force -Path $DestinationDirectoryPath -ItemType Directory -WhatIf:$WhatIf | Out-Null
-                Copy-Item -LiteralPath $SourcePath -Destination $Destination -WhatIf:$WhatIf
-            }
-        }
-
-
-    }
-
 }
