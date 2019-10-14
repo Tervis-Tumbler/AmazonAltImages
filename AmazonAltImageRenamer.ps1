@@ -1,4 +1,4 @@
-$PathToCSV = "/Users/rpaul/Desktop/01_DEVELOP/14113-081619-Amazon-16ozAltImages/16 oz Alternate Images 8.12.19.csv"
+$PathToCSV = "\\tervis.prv\creative\Graphics Drive\DESIGNS\Image Req\Amazon Image Requests\Amazon Alternate Images\Product Catalog_US 10.7.19active.csv"
 $CSVRecords = Import-Csv -Path $PathToCSV
 
 $AlternateImagesToUseToFileNameMap = @{
@@ -34,13 +34,80 @@ $SizeAndSubCategory = @(
         "Item: Product Size" = 16
         "Item: Product Sub Category" = "DWT"
         FileName = [ordered]@{
-            PT05 = "16ozAlt-Benefits.jpg"
-            PT06 = "16oz-alt-accessories.jpg"
-            PT07 = "16oz-altimage-lid.jpg"
-            PT09 = "16oz-alt-nolid-indoors.jpg"
-            PT10 = "16oz-alt-nolid-table.jpg"
-            PT11 = "16oz-alt-lidded-shuffleboard.jpg"
-            PT12 = "16oz-alt-lidded-outdoor.jpg"
+            PT07 = [ordered]@{
+                "Item: Lid Type" = "TRAVEL LID"
+                FileName ="16oz-alt-lid.jpg"
+            }
+            PT08 = [ordered]@{
+                "Item: Lid Type" = "TRAVEL LID"
+                "Package Type" = "04"
+                FileName ="16oz-4-pak-lid.jpg"
+            },
+            [ordered]@{
+                "Item: Lid Type" = "NA"
+                "Package Type" = "04"
+                FileName ="16oz-4-pak-nolid.jpg"
+            },
+            [ordered]@{
+                "Item: Lid Type" = "TRAVEL LID"
+                "Package Type" = "02"
+                FileName ="16oz-2-pak-lid.jpg"
+            },
+            [ordered]@{
+                "Item: Lid Type" = "NA"
+                "Package Type" = "02"
+                FileName ="16oz-2-pak-nolid.jpg"
+            },
+            [ordered]@{
+                "Item: Lid Type" = "TRAVEL LID"
+                "Package Type" = "BX"
+                FileName ="16oz-1-pak-lid.jpg"
+            },
+            [ordered]@{
+                "Item: Lid Type" = "NA"
+                "Package Type" = "BX"
+                FileName ="16oz-1-pak-nolid.jpg"
+            }
+        }
+    },
+    @{
+        "Item: Product Size" = 16
+        "Item: Product Sub Category" = "DWT"
+        FileName = [ordered]@{
+            PT07 = [ordered]@{
+                "Item: Lid Type" = "TRAVEL LID"
+                FileName ="16oz-alt-lid.jpg"
+            }
+            PT08 = [ordered]@{
+                "Item: Lid Type" = "TRAVEL LID"
+                "Package Type" = "04"
+                FileName ="16oz-4-pak-lid.jpg"
+            },
+            [ordered]@{
+                "Item: Lid Type" = "NA"
+                "Package Type" = "04"
+                FileName ="16oz-4-pak-nolid.jpg"
+            },
+            [ordered]@{
+                "Item: Lid Type" = "TRAVEL LID"
+                "Package Type" = "02"
+                FileName ="16oz-2-pak-lid.jpg"
+            },
+            [ordered]@{
+                "Item: Lid Type" = "NA"
+                "Package Type" = "02"
+                FileName ="16oz-2-pak-nolid.jpg"
+            },
+            [ordered]@{
+                "Item: Lid Type" = "TRAVEL LID"
+                "Package Type" = "BX"
+                FileName ="16oz-1-pak-lid.jpg"
+            },
+            [ordered]@{
+                "Item: Lid Type" = "NA"
+                "Package Type" = "BX"
+                FileName ="16oz-1-pak-nolid.jpg"
+            }
         }
     }
 )
