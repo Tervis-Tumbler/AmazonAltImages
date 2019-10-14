@@ -1,5 +1,5 @@
 function Invoke-AmazonAltImageCopyAndRename {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param (
         $PathToCSV = "\\tervis.prv\creative\Graphics Drive\DESIGNS\Image Req\Amazon Image Requests\Amazon Alternate Images\Product Catalog_US 10.7.19active.csv",
         $ResourcesPath = "\\tervis.prv\creative\Graphics Drive\DESIGNS\Image Req\Amazon Image Requests\Amazon Alternate Images",
@@ -9,9 +9,15 @@ function Invoke-AmazonAltImageCopyAndRename {
     $CSVRecords |
     Add-Member -MemberType ScriptProperty -Name PTO8ImageFileName -Value {
         "$($This.'Item: Product Size')$($This.'Item: Product Sub Category')-$($This.'Item: Cup Count'.PadLeft(2,'0'))-$($This.'Item: Lid Type').jpg"
+    } -Force -PassThru |
+    Add-Member -MemberType ScriptProperty -Name COGSAsDecimal -Value {
+        [decimal]($This.'Shipped COGS 1.1.19-9.29.19' -replace '[^0-9.]')
     } -Force
+
     
     $CSVRecords |
+    Sort-Object -Property COGSAsDecimal -Descending |
+    Select-Object -First 100 |
     ForEach-Object -Process {
         $CSVRecord = $_
         $ProductSize = $CSVRecord."Item: Product Size"
@@ -39,6 +45,7 @@ function Invoke-AmazonAltImageCopyAndRename {
 }
 
 function Copy-AmazonAltImageFile {
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         $DestinationImageRootPath,
         $AmazonAltImageCode,
