@@ -1,5 +1,4 @@
 function Invoke-AmazonAltImageCopyAndRename {
-    [CmdletBinding(SupportsShouldProcess=$true)]
     param (
         $PathToCSV = "\\tervis.prv\creative\Graphics Drive\DESIGNS\Image Req\Amazon Image Requests\Amazon Alternate Images\Product Catalog_US 10.7.19active.csv",
         $ResourcesPath = "\\tervis.prv\creative\Graphics Drive\DESIGNS\Image Req\Amazon Image Requests\Amazon Alternate Images",
@@ -24,7 +23,7 @@ function Invoke-AmazonAltImageCopyAndRename {
         $ProductFormType = $CSVRecord."Item: Product Sub Category"
         $AmazonAltImageByProductSizeAndProductFormTypeRootDirectory = "$ResourcesPath\$ProductSize$ProductFormType"
 
-        $AmazonAltImageCodesWithOnlyOneImageFile = 5..12 | Where-Object {$_ -ne 8} | ForEach-Object { "PTO$($_)"}
+        $AmazonAltImageCodesWithOnlyOneImageFile = 5..12 | Where-Object {$_ -ne 8} | ForEach-Object { "PT" + "$_".PadLeft(2,'0') }
         $AmazonAltImageCodesWithOnlyOneImageFile |
         ForEach-Object -Process {
             $AmazonAltImageCode = $_
@@ -45,7 +44,6 @@ function Invoke-AmazonAltImageCopyAndRename {
 }
 
 function Copy-AmazonAltImageFile {
-    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         $DestinationImageRootPath,
         $AmazonAltImageCode,
@@ -57,8 +55,8 @@ function Copy-AmazonAltImageFile {
         $Destination = "$DestinationDirectoryPath/$($CSVRecord.UPC).$AmazonAltImageCode.jpg"
 
         if (-not (Test-Path -LiteralPath $Destination)) {
-            New-Item -Force -Path $DestinationDirectoryPath -ItemType Directory -WhatIf:$WhatIf | Out-Null
-            $AmazonAltImageSourceFile | Copy-Item -Destination $Destination -WhatIf:$WhatIf
+            New-Item -Force -Path $DestinationDirectoryPath -ItemType Directory | Out-Null
+            $AmazonAltImageSourceFile | Copy-Item -Destination $Destination
         }
     }
 }
