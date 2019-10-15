@@ -6,7 +6,7 @@ function Invoke-AmazonAltImageCopyAndRename {
     )
     $CSVRecords = Import-Csv -Path $PathToCSV
     $CSVRecords |
-    Add-Member -MemberType ScriptProperty -Name PTO8ImageFileName -Value {
+    Add-Member -MemberType ScriptProperty -Name PT08ImageFileName -Value {
         "$($This.'Item: Product Size')$($This.'Item: Product Sub Category')-$($This.'Item: Cup Count'.PadLeft(2,'0'))-$($This.'Item: Lid Type').jpg"
     } -Force -PassThru |
     Add-Member -MemberType ScriptProperty -Name COGSAsDecimal -Value {
@@ -32,11 +32,10 @@ function Invoke-AmazonAltImageCopyAndRename {
 
         }
 
-        $AmazonAltImageCodesWithMultipleImageFile = @("PTO8")
+        $AmazonAltImageCodesWithMultipleImageFile = @("PT08")
         $AmazonAltImageCodesWithMultipleImageFile |
         ForEach-Object -Process {
             $AmazonAltImageCode = $_
-
             $AmazonAltImageSourceFile = Get-Item -ErrorAction SilentlyContinue -Path "$AmazonAltImageByProductSizeAndProductFormTypeRootDirectory\$AmazonAltImageCode\$($CSVRecord.`"$($AmazonAltImageCode)ImageFileName`")"
             Copy-AmazonAltImageFile -DestinationImageRootPath $DestinationImageRootPath -AmazonAltImageCode $AmazonAltImageCode -CSVRecord $CSVRecord -AmazonAltImageSourceFile $AmazonAltImageSourceFile
         }
